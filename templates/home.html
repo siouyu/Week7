@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁</title>
+    <link rel="stylesheet" type="text/css" href="/static/layout.css" />
+</head>
+<body>
+    <h1 class="title">歡迎光臨，請註冊登入系統</h1>
+        <div class="word">註冊帳號</div>
+        <div class="containerOne">
+            <div class="centerOne">
+                <form action="/signup" method="post" name="signUpBox" onsubmit="return checkSignUp();">
+                    <div>
+                        <label for="name" class="detail">姓名</label>
+                        <input class="inputDetail" id="necessary" name="name" placeholder="name" input type="text"/>
+                    </div>
+                    <div>
+                        <label for="username" class="detail">帳號</label>
+                        <input class="inputDetail" id="necessary" name="username" placeholder="username" input type="text"/>
+                    </div>
+                    <div>
+                        <label for="password" class="detail">密碼</labe>
+                        <input class="inputDetail" id="necessary" name="password" placeholder="password" input type="password"/>
+                    </div>
+                    <div class="signInBtn" method="post">
+                        <button class="button" type="submit" id="signUp">註冊</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <hr/>
+        <div class="word">登入系統</div>
+        <div class="containerTwo">
+            <div class="centerTwo">
+                <form action="/signin" method="post" name="logInBox"  onsubmit="return checkSignIn();">
+                    <div>
+                        <label for="username" class="detail" >帳號</label>
+                        <input class="inputDetail" id="necessary" name="username" placeholder="username" input type="text"/>
+                    </div>
+                    <div>
+                        <label for="password" class="detail">密碼</labe>
+                        <input class="inputDetail" id="necessary" name="password" placeholder="password" input type="password"/>
+                    </div>
+                    <div class="signInBtn" method="post">
+                        <button class="button" type="submit" id="signIn">登入</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            const signUp = document.getElementById("signUp")
+            const logIn = document.getElementById("signIn")
+
+            signUp.addEventListener("click",checkSignUp)
+            function checkSignUp(e){ 
+                with(document.signUpBox){
+                    if(name.value.length == 0 || username.value.length == 0 || password.value.length == 0){
+                    e.preventDefault();
+                    window.alert("請填寫完整註冊資料！")}}
+                }
+
+            logIn.addEventListener("click",checkLogIn)
+            function checkLogIn(e){ 
+                with(document.logInBox){
+                    if(username.value.length == 0 || password.value.length == 0){
+                    e.preventDefault();
+                    window.alert("請填寫完整登入資料！")}}
+                }
+        </script>
+</body> 
+</html>

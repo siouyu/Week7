@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member</title>
+    <link rel="stylesheet" type="text/css" href="/static/layout.css" />
+</head>
+<body>
+    <h1 class="titleOne">歡迎光臨，這是會員頁</h1>
+    <div class="word">{{ name }}，歡迎登入系統</div>
+    <div class="back">
+        <form action="/signout">
+            <button class="backHome" type="sumbit" href="" name="signout">登出系統</button>
+        </form>
+    </div>
+    <hr/>
+    <div class="word">快來留言吧</div>
+    <div class="containerThree">
+        <div class="centerThree">
+            <form action="/createMessage" method="post">
+                <div>
+                    <label for="content" class="detail">內容</label>
+                    <input class="inputDetail" name="message" placeholder="Leave a message!" input type="text"/>
+                </div>
+                <div class="signInBtn" method="post">
+                    <button class="button" type="submit" id="sentBtn">送出</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <br>
+    <div class="word">查詢會員姓名</div>
+    <div class="searchLayout">
+        <input class="searchName" id="searchName" input type="text"/>
+        <div class="signInBtn" method="post">
+            <button class="buttonSearch" type="submit" onclick="search()">送出</button>
+        </div>
+    </div>
+    <div class="searchResult"></div>
+    <div class="word">更新我的姓名</div>
+    <div class="searchLayout">
+        <input class="renewName" id="renewName" input type="text"/>
+        <div class="signInBtn" method="post">
+            <button class="buttonSearch" type="submit" onclick="renew()">更新</button>
+        </div>
+    </div>
+    <div class="renameResult"></div>
+    <br>
+    <hr/>
+    {% for i in row %}
+    <div class="box">
+        <div class="user">{{ i[0] }} </div>
+        <div class="message">&nbsp;: {{ i[1] }}</div>
+    </div>
+    {% endfor %}
+    <script>
+        function search(){
+            let searchValue = document.getElementById("searchName").value;
+            url = "http://127.0.0.300/api/member?username=" + searchValue;
+            let searchDiv = document.querySelector("#searchResult");
+            searchDiv.innerHTML = " ";
+            fetch(url).then(function(response){
+                return response.json();
+            }).then(function(data){
+                let searchResult = data["data"];
+                if (searchResult === null){
+                    const result = document.createElement("div");
+                    const content = document.createTextNode("查無此人");
+                    result.appendChild(content);
+                    searchDiv.appendChild(result)
+                }else{
+                    const result = document.createElement("div");
+                    const content = document.createTextNode(searchResult["name"]+"("+searchResult["username"]+")");
+                    result.appendChild(content);
+                    searchDiv.appendChild(result);
+                }
+            }).catch(function(error){ // catch() 綁定被 rejected 時要執行的函數
+                console.log("搜尋 something weird")
+            })
+        }
+        function renew(){
+            let url = "http://127.0.0.300/api/member";
+            let rename = document.getElementById("renewName").value;
+            const data = {
+                "name" : rename
+            };
+            fetch(url,{
+                method: "PATCH",
+                body: JSON.stringify(data), // JSON.stringify() 將物件變成 JSON 格式
+                headers:{
+                    "Content-Type" : "application/json"
+                }
+            }).then(function(response){
+                response.json().then(function(data){
+                    console.log(data);
+                })
+            }).catch(function(error){
+                console.log("更新 something bad");
+            })
+            let renewDiv = document.querySlector("#renameResult");
+            renameDiv.innerHTML = " ";
+            const result = document.createElement("div");
+            const content = document.createTextNode("更新成功");
+            result.appendChild(content);
+            renameDiv.appendChild(result);
+        }
+    </script>
+</body>
+</html>
