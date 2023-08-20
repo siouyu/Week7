@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1 class="titleOne">歡迎光臨，這是會員頁</h1>
-    <div class="word">{{ name }}，歡迎登入系統</div>
+    <div class="word" id="memberName">{{ name }}，歡迎登入系統</div>
     <div class="back">
         <form action="/signout">
             <button class="backHome" type="sumbit" href="" name="signout">登出系統</button>
@@ -31,9 +31,9 @@
     <br>
     <div class="word">查詢會員姓名</div>
     <div class="searchLayout">
-        <input class="searchName" id="searchName" type="text"/>
+        <input class="searchName" id="searchName" placeholder="輸入帳號查詢" type="text"/>
         <div class="signInBtn" method="post">
-            <button class="buttonSearch" id="searchNameBtn" placeholder="輸入會員帳號查詢" type="submit">送出</button>
+            <button class="buttonSearch" id="searchNameBtn" type="submit">送出</button>
         </div>
     </div>
     <div class="searchResult" id="searchResult"></div>
@@ -62,6 +62,7 @@
             url = "/api/member?username=" + searchValue;
             let searchDiv = document.querySelector("#searchResult");
             searchDiv.innerHTML = "";
+
             fetch(url).then(function(response){
                 return response.json();
             }).then(function(data){
@@ -80,38 +81,42 @@
             }).catch(function(error){ // catch() 綁定被 rejected 時要執行的函數
                 console.log("搜尋 something weird")
             })
-        }
+            }
         })
 
         document.addEventListener("DOMContentLoaded", function(){
             const renewButton = document.getElementById("renewNameBtn");
+            const memberName = document.getElementById("memberName");
             renewButton.addEventListener("click", renew);
             function renew(){
-            let url = "/api/member";
-            let renewName = document.getElementById("renewName").value;
-            const data = {
-                "name" : renewName
-            };
-            fetch(url,{
-                method: "PATCH",
-                body: JSON.stringify(data), // JSON.stringify() 將物件變成 JSON 格式
-                headers:{
-                    "Content-Type" : "application/json"
-                }
-            }).then(function(response){
-                response.json().then(function(data){
-                    console.log(data);
+                let url = "/api/member";
+                let renewName = document.getElementById("renewName").value;
+                // memberName.textContent = renewName;
+                const data = {
+                    "name" : renewName
+                };
+
+                fetch(url,{
+                    method: "PATCH",
+                    body: JSON.stringify(data), // JSON.stringify() 將物件變成 JSON 格式
+                    headers:{
+                        "Content-Type" : "application/json"
+                    }
+                }).then(function(response){
+                    response.json().then(function(data){
+                        console.log(data);
+                        memberName.textContent = renewName + "，歡迎登入系統";
+                    })
+                }).catch(function(error){
+                    console.log("更新 something bad");
                 })
-            }).catch(function(error){
-                console.log("更新 something bad");
-            })
-            let renewNameDiv = document.querySelector("#renameResult");
-            renewNameDiv.innerHTML = "";
-            const result = document.createElement("div");
-            const content = document.createTextNode("更新成功");
-            result.appendChild(content);
-            renewNameDiv.appendChild(result);
-        }
+                let renewNameDiv = document.querySelector("#renameResult");
+                renewNameDiv.innerHTML = "";
+                const result = document.createElement("div");
+                const content = document.createTextNode("更新成功");
+                result.appendChild(content);
+                renewNameDiv.appendChild(result);
+            }
         })
     </script>
 </body>
