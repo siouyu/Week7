@@ -31,20 +31,20 @@
     <br>
     <div class="word">查詢會員姓名</div>
     <div class="searchLayout">
-        <input class="searchName" id="searchName" input type="text"/>
+        <input class="searchName" id="searchName" type="text"/>
         <div class="signInBtn" method="post">
-            <button class="buttonSearch" type="submit" onclick="search()">送出</button>
+            <button class="buttonSearch" id="searchNameBtn" placeholder="輸入會員帳號查詢" type="submit">送出</button>
         </div>
     </div>
-    <div class="searchResult"></div>
+    <div class="searchResult" id="searchResult"></div>
     <div class="word">更新我的姓名</div>
     <div class="searchLayout">
-        <input class="renewName" id="renewName" input type="text"/>
+        <input class="renewName" id="renewName" type="text"/>
         <div class="signInBtn" method="post">
-            <button class="buttonSearch" type="submit" onclick="renew()">更新</button>
+            <button class="buttonSearch" id="renewNameBtn" type="submit">更新</button>
         </div>
     </div>
-    <div class="renameResult"></div>
+    <div class="renameResult" id="renameResult"></div>
     <br>
     <hr/>
     {% for i in row %}
@@ -54,11 +54,14 @@
     </div>
     {% endfor %}
     <script>
+        document.addEventListener("DOMContentLoaded", function(){
+        const searchButton = document.getElementById("searchNameBtn");
+        searchButton.addEventListener("click", search);
         function search(){
             let searchValue = document.getElementById("searchName").value;
-            url = "http://127.0.0.300/api/member?username=" + searchValue;
+            url = "/api/member?username=" + searchValue;
             let searchDiv = document.querySelector("#searchResult");
-            searchDiv.innerHTML = " ";
+            searchDiv.innerHTML = "";
             fetch(url).then(function(response){
                 return response.json();
             }).then(function(data){
@@ -78,11 +81,16 @@
                 console.log("搜尋 something weird")
             })
         }
-        function renew(){
-            let url = "http://127.0.0.300/api/member";
-            let rename = document.getElementById("renewName").value;
+        })
+
+        document.addEventListener("DOMContentLoaded", function(){
+            const renewButton = document.getElementById("renewNameBtn");
+            renewButton.addEventListener("click", renew);
+            function renew(){
+            let url = "/api/member";
+            let renewName = document.getElementById("renewName").value;
             const data = {
-                "name" : rename
+                "name" : renewName
             };
             fetch(url,{
                 method: "PATCH",
@@ -97,13 +105,14 @@
             }).catch(function(error){
                 console.log("更新 something bad");
             })
-            let renewDiv = document.querySlector("#renameResult");
-            renameDiv.innerHTML = " ";
+            let renewNameDiv = document.querySelector("#renameResult");
+            renewNameDiv.innerHTML = "";
             const result = document.createElement("div");
             const content = document.createTextNode("更新成功");
             result.appendChild(content);
-            renameDiv.appendChild(result);
+            renewNameDiv.appendChild(result);
         }
+        })
     </script>
 </body>
 </html>

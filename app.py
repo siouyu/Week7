@@ -130,49 +130,50 @@ def createMessage():
 
 # 查詢會員資料
 @app.route("/api/member", methods = ["GET", "PATCH"])
-def api_member():
-    if session.get("username"): # 判定會員是否登入
-        try:
-            con = connection()
-            cursor = con.cursor()
-            username = request.args.get("username")
-            check_user = "SELECT id, name FROM member WHERE username = %s"
-            check_value = (username,)
-            cursor.execute(check_user, check_value)
-            user_data = cursor.fetchone()
-            if user_data:
-                data = {
-                    "data":{
-                        "id": user_data[0],
-                        "name": user_data[1],
-                        "username": username
-                    }
-                }
-                return jsonify(data)
-            else:
-                data = {
-                    "data":null
-                }
-                return jsonify(data)
-        except Exception as e:
-            return jsonify({"error": e}), 500
-        finally:
-            con.close()
-    else:
-        if session.get("username") and request.methods == "PATCH":
+def api():
+    if session.get("userID"): # 判定會員是否登入才能查詢＆修改資料
+        if request.method == "PATCH": # 想改名字的話
             try:
-                con = connection()
-                cursor = con.cursor()
                 rename = request.get_json()
-                change = "UPDATE member SET name = %s WHERE id = %s"
-                change_value = (rename["name"], session["userID"])
-                cursor.execute(change, change_value)
-                con.commit()
+                with connection() as con, con.cursor() as cursor:
+                    change = "UPDATE member SET name = %s WHERE id = %s"
+                    change_value = (rename["name"], session["userID"])
+                    cursor.execute(change, change_value)
+                    con.commit()
                 return jsonify({"ok": True})
             except:
                 return jsonify({"error": True})
             finally:
                 con.close()
+        else: # 查完名字傳回前端
+            try:
+                username = request.args.get("username") # 抓到 URL ? 後的参数
+                # print(username)
+                with connection() as con, con.cursor() as cursor:
+                    check_user = "SELECT id, name FROM member WHERE username = %s"
+                    check_value = (username,)
+                    cursor.execute(check_user, check_value)
+                    user_data = cursor.fetchone()
+                if user_data:
+                    data = {
+                        "data":{
+                            "id": user_data[0],
+                            "name": user_data[1],
+                            "username": username
+                        }
+                    }
+                    return jsonify(data)
+                else:
+                    data = {
+                        "data": None
+                    }
+                    return jsonify(data)
+            except Exception as e:
+                return jsonify({"error": e}), 500
+            finally:
+                con.close()
+    else:
+        return jsonify({"error": True})
 
 # 失敗頁
 @app.route("/error")
